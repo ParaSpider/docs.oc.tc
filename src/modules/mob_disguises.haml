@@ -1,0 +1,24 @@
+.container
+    .jumbotron.subhead
+        %h1 Modules
+        %p.lead Mob Disguises
+    %section
+        .row
+            = partial('modules_sidebar')
+            .col-sm-9
+                .page-header
+                    %h1 Mob Disguises
+                :markdown
+                    PGM allows for a mob disguise to be applied to a team or class with the `<mob-disguises>` module. These mob disguises are applied when a player changes his/her team or class, and are updated when new players join the match.
+
+                        <mob-disguises>
+                            <disguise type="iron golem">
+                                <filter>
+                                    <team>red</team>
+                                </filter>
+                            </disguise>
+                        </mob-disguises>
+
+                    The above will apply a mob-disguise type of `IRON_GOLEM` to the red team. The mob-disguise element takes in either a team or player filter.
+
+                    All supported mob-disguise types are available [here](https://github.com/libraryaddict/LibsDisguises/blob/dea2dc856a295d97c17e066b830c2f284898359c/src/me/libraryaddict/disguise/disguisetypes/DisguiseType.java).
