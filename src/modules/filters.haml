@@ -91,34 +91,34 @@
                             %tr
                                 %th Element
                                 %th Description
-                        %tdata
+                        %tbody
                             %tr
                                 %td
                                     %pre
                                         %code= html_escape('<filter name="filter1"/>')
-                                %td Reference a filter by its name
+                                %td Reference a filter by its name.
                             %tr
                                 %td
                                     %pre
-                                        %code= html_escape('<team>team name</team>')
-                                %td Matches by a teams by their id
+                                        %code= html_escape('<team>team</team>')
+                                %td Matches a team by its name or ID.
                             %tr
                                 %td
                                     %pre
                                         %code= html_escape('<block>block name</block>')
-                                %td Matches blocks by their bukkit name
+                                %td Matches blocks by their bukkit name.
                             %tr
                                 %td
                                     %pre
                                         %code= html_escape('<spawn>spawn reason</spawn>')
-                                %td 
+                                %td
                                     Matches spawn event reasons, see 
                                     %a{:href=>"/modules/mobs"} mob spawning
                             %tr
                                 %td
                                     %pre
                                         %code= html_escape('<mob>mob name</mob>')
-                                %td 
+                                %td
                                     Matches mobs by their name, see
                                     %a{:href=>"/modules/mobs"} mob spawning
                             %tr
@@ -132,6 +132,39 @@
                                         %code= html_escape('<kill-streak count="1"/>')
                                 %td
                                     Match players with a certain range or amount of kills.
+                                    %a.right-ref-link{:href=>"#killStreakFilter"} <i class="fa fa-share"></i>
+                            %tr
+                                %td
+                                    %pre.xml
+                                        %code= html_escape('<class>class name</class>')
+                                %td
+                                    Match players with the specified class.
+                            %tr
+                                %td
+                                    %pre
+                                        %code= html_escape('<random>float or range</random>')
+                                %td
+                                    Random chance matcher.
+                                    %a.right-ref-link{:href=>"#randomFilter"} <i class="fa fa-share"></i>
+                            %tr
+                                %td
+                                    %pre
+                                        %code= html_escape('<crouching/>')
+                                %td
+                                    Match if the player is crouching.
+                            %tr
+                                %td
+                                    %pre
+                                        %code= html_escape('<objective>objective_id</objective>')
+                                %td
+                                    Match completed objectives.
+                                    %a.right-ref-link{:href=>"#objectiveFilter"} <i class="fa fa-share"></i>
+                            %tr
+                                %td
+                                    %pre
+                                        %code= html_escape('<cause>cause</cause>')
+                                %td
+                                    Filter event causes, currently only <code>PLAYER</code> and <code>EXPLOSION</code>. 
                 :markdown
 
                     <br/>
@@ -148,7 +181,7 @@
                                 %th Attribute
                                 %th Description
                                 %th Value
-                        %tdata
+                        %tbody
                             %tr
                                 %td
                                     %code min=""
@@ -186,6 +219,84 @@
                         <filter>
                             <kill-streak repeat="true" count="10"/>    <!-- match for every 10th kill -->
                         </filter>
+
+
+                    <br/>
+                    #### [Random Filter](id:randomFilter)
+
+                    This filter will randomly return either `ALLOW` or `DENY`, the chance for `ALLOW` being determined by its value. It accepts a decimal number between zero and one or a standard mathematical interval such as `[0, 1)`. Intervals are used to create mutual exclusive filters that return different results even if they are called at the same time.
+
+                    Examples
+
+                        <!-- 50% chance that it will return either ALLOW or DENY -->
+                        <random>0.5</random>
+
+                        <!-- Also a 50% chance -->
+                        <!-- Any number from 0.25 to 0.75 including 0.25 but excluding 0.75 -->
+                        <random>[0.25, 0.75)</random>
+
+                        <!-- Any number from 0 to 1 including zero but excluding one -->
+                        <random>[0, 1.0)</random>
+                        <!-- This will never return DENY since java.util.Random nextDouble() never returns 1, only 0.999999999999996 (https://weblogs.java.net/blog/kabutz/archive/2012/02/14/pushing-limits-javas-random-0) -->
+
+
+                    <br/>
+                    #### [Objective Filter](id:objectiveFilter)
+
+                    The objective must have an id to be referenced from this filter.
+
+                    This works for cores, destroyables, hills/control-points, and wools. All IDs used in the map must be unique. You can reference an objective in a filter by its ID:
+
+                        <filter name="red-core-leaked">
+                            <objective>red-core</objective>
+                        </filter>
+
+                    This filter will _deny_ everything before red-core leaks and _allow_ everything after it leaks. It doesn't care what is actually being filtered, it only depends on the specified goal.
+
+                    For hills/control-points, the filter works a bit differently. By default, it will _allow_ players on the team that owns the hill, _deny_ players on any other team, and _ignore_ anything that is not a player. However, you can optionally specify a particular team:
+
+                        <objective team="blue-team">central-hill</objective>
+
+                    And the filter will not care about what is being filtered, it will simply _allow_ everything if blue-team owns central-hill, and _deny_ everything if they don't.
+
+                    `NOTE:` When referencing a team from an objective filter, you must use the team's ID rather than its name.
+
+
+                    #####  Objective Filter Attributes
+
+                .table-responsive
+                    %table.table.table-striped.table-hover.table-condensed.table-bordered
+                        %thead
+                            %tr
+                                %th Attribute
+                                %th Description
+                                %th Value
+                        %tbody
+                            %tr
+                                %td
+                                    %code team=""
+                                %td If the objective has ownership, e.g. hills, match objectives belonging to this team.
+                                %td
+                                    %a{:href => "/modules/teams"} Team ID
+                            %tr
+                                %td
+                                    %code any=""
+                                %td
+                                    Match objectives belonging to any team.
+                                    %br
+                                    %i Not compatible with the <code>team</code> attribute
+                                %td
+                                    %span.label.label-primary true/false
+
+                :markdown
+                    Example
+
+                        <objective team="blue-team">central-hill</objective>
+                        
+                        <filter name="red-core-leaked">
+                            <objective>red-core</objective>
+                        </filter>
+
 
 
                     <br/>
